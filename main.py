@@ -68,7 +68,7 @@ class Matrix:
         
     def print_graph(self):
         for i in range(0, len(self.edges)):
-            print(str(i) + str(self.edges[i]))
+            print(list(self.vertices.keys())[i] + " " + str(self.edges[i]))
     
 def chosenGraph(graph_type, graph):
     if args.generate:
@@ -85,14 +85,25 @@ def chosenGraph(graph_type, graph):
                     print("List of commands:")
                     print("Print - print graph")
                     print("Find - find edge from _ to _ ")
-                    print()
+                    print("Breath - breath first search")
+                    print("Depth - depth first search")
+                    print("Back - back to main menu")
                     print("Exit - exit program")
                     continue
+
+
+
 
                 if action == "print":
                     graph.print_graph()
                     continue
+
+
                 if action == "exit":
+                    break
+
+                if action == "back":
+                    main()
                     break
 
         elif graph_type == "List":
@@ -126,6 +137,7 @@ def chosenGraph(graph_type, graph):
 def main():
     graph_matrix = Matrix()
     graph_list = List()
+
     if args.generate:
         command=input("Choose graph type: Matrix or List: ")
         if command == "Matrix":
