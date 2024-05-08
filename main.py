@@ -74,7 +74,9 @@ def chosenGraph(graph_type, graph):
 
 
                 if action == "print":
-                    print(generation)
+                    if generation is not None:
+                        for i, neighbors in enumerate(generation):
+                            print(f"{i + 1}: {neighbors}")                   
                     continue
 
 

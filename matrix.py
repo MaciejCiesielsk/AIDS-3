@@ -13,13 +13,7 @@ class Vertex:
             self.neighbors.sort()
 
 class Matrix:
-    vertices = {}
-    edges = []
-    edge_indices = {}
-
     
-        
-
     def generate_graph(self, saturation, nodes):
         if saturation > 1 or saturation < 0:
             print("Saturation must be a value between [0, 1].")
