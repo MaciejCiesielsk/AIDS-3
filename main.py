@@ -1,7 +1,7 @@
 import sys
 import os 
 import argparse 
-from zadanie3.graph import Graph
+from graph import Graph
 
 
 parser=argparse.ArgumentParser()
@@ -23,8 +23,8 @@ def chosenGraph(graph_type, graph):
                 print("List of commands:")
                 print("Print - print graph")
                 print("Find - find edge from _ to _ ")
-                print("Breath - breath first search")
-                print("Depth - depth first search")
+                print("BFS - breath first search")
+                print("DFS - depth first search")
                 print("Back - back to main menu")
                 print("Exit - exit program")
                 print("-".center(50, "-"))
@@ -40,6 +40,18 @@ def chosenGraph(graph_type, graph):
             if action == "back":
                 main()
                 break
+
+            if action == "find":
+                graph.find_edge(graph_type, generation)
+                continue
+
+            if action == "bfs":
+                graph.bfs(graph_type, generation, int(input("Enter starting vertex: ")))
+                continue
+
+            if action == "dfs":
+                graph.dfs(graph_type, generation)
+                continue
 
             else:
                 print("Invalid command")
@@ -72,6 +84,10 @@ def chosenGraph(graph_type, graph):
             if action == "back":
                 main()
                 break
+
+            if action == "find":
+                graph.find_edge(user)
+                continue
 
             else:
                 print("Invalid command")

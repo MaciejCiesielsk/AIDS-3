@@ -82,15 +82,98 @@ class Graph:
         else:
             print("Invalid graph type")
 
-        def print_matrix_with_indices(matrix):
-            print(" ", end=" ")
-            for i in range(len(matrix[0])):
-                print(i+1, end=" ")
+    def find_edge(self, graph_type, graph_data):
+        if graph_type == "Matrix":
+            i = int(input("Enter starting vertex: ")) - 1
+            j = int(input("Enter ending vertex: ")) - 1
+            if 0 <= i < len(graph_data) and 0 <= j < len(graph_data):
+                if graph_data[i][j] == 1:
+                    print(f"Edge from {i + 1} to {j + 1} exists")
+                else:
+                    print(f"Edge from {i + 1} to {j + 1} does not exist")
+            else:
+                print("Invalid vertices")
+        elif graph_type == "List":
+            i = int(input("Enter starting vertex: ")) - 1
+            j = int(input("Enter ending vertex: ")) - 1
+            if 0 <= i < len(graph_data) and 0 <= j < len(graph_data):
+                if j in graph_data[i]:
+                    print(f"Edge from {i + 1} to {j + 1} exists")
+                else:
+                    print(f"Edge from {i + 1} to {j + 1} does not exist")
+            else:
+                print("Invalid vertices")
+        else:
+            print("Invalid graph type")
+
+
+    def bfs(self, graph_type, graph_data, start):
+        if graph_type == "Matrix":
+            visited = [False] * len(graph_data)
+            queue = [start]
+            visited[start] = True
+
+            while queue:
+                vertex = queue.pop(0)
+                print(vertex + 1, end=" ")
+                for i in range(len(graph_data)):
+                    if graph_data[vertex][i] == 1 and not visited[i]:
+                        queue.append(i)
+                        visited[i] = True
+        elif graph_type == "List":
+            start -= 1 
+            if start < 0 or start >= len(graph_data):
+                print("Invalid starting vertex")
+                return
+
+            visited = [False] * len(graph_data)
+            queue = [start]
+            visited[start] = True
+            while queue:
+                vertex = queue.pop(0)
+                print(vertex + 1, end=" ")  
+
+                for neighbor in graph_data[vertex]:
+                    if not visited[neighbor - 1]:  
+                        queue.append(neighbor - 1)
+                        visited[neighbor - 1] = True
+                
+        else:
+            print("Invalid graph type")
+
+
+    def dfs_util(self, graph_data, vertex, visited):
+        visited[vertex] = True
+        print(vertex + 1, end=" ")
+
+        for i in range(len(graph_data)):
+            if graph_data[vertex][i] == 1 and not visited[i]:
+                self.dfs_util(graph_data, i, visited)
+    
+    def dfs(self, graph_type, graph_data):
+        if graph_type == "Matrix":
+            start = int(input("Enter starting vertex: "))
+            visited = [False] * len(graph_data)
+            self.dfs_util(graph_data, start, visited)
             print()
-
-            for i, row in enumerate(matrix, start=1):
-                print(i, end=" ")
-                for value in row:
-                    print(int(value), end=" ")
+        elif graph_type == "List":
+            start = int(input("Enter starting vertex: ")) 
+            if 0 <= start < len(graph_data):
+                visited = [False] * len(graph_data)
+                self.dfs_util_list(graph_data, start, visited)
                 print()
+            else:
+                print("Invalid starting vertex")
+        else:
+            print("Invalid graph type")
 
+
+        
+
+    def dfs_util_list(self, graph_data, vertex, visited):
+        visited[vertex] = True
+        print(vertex + 1, end=" ")  
+
+        for neighbor in graph_data[vertex]:
+            if not visited[neighbor - 1]: 
+                self.dfs_util_list(graph_data, neighbor - 1, visited)
