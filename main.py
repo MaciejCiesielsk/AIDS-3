@@ -31,7 +31,10 @@ def chosenGraph(graph_type, graph):
                 continue
 
             if action == "print":
-                print(generation)
+                if graph_type == "Matrix":
+                    graph.print_matrix()
+                elif graph_type == "List":
+                    graph.print_list(generation,graph_type)
                 continue
 
             if action == "exit":
@@ -67,15 +70,19 @@ def chosenGraph(graph_type, graph):
                 print("List of commands:")
                 print("Print - print graph")
                 print("Find - find edge from _ to _ ")
-                print("Breath - breath first search")
-                print("Depth - depth first search")
+                print("BFS - breath first search")
+                print("DFS - depth first search")
                 print("Back - back to main menu")
                 print("Exit - exit program")
+                print("Khan - topological sort using Khan's algorithm")
                 print("-".center(50, "-"))
                 continue
 
             if action == "print":
-                print(user)
+                if graph_type == "Matrix":
+                    graph.print_matrix()
+                elif graph_type == "List":
+                    graph.print_list(user,graph_type)
                 continue
 
             if action == "exit":
@@ -86,8 +93,22 @@ def chosenGraph(graph_type, graph):
                 break
 
             if action == "find":
-                graph.find_edge(user)
+                graph.find_edge(graph_type,user)
                 continue
+
+            if action == "bfs":
+                graph.bfs(graph_type, user, int(input("Enter starting vertex: "))-1)
+                print()
+                continue
+
+            if action == "dfs":
+                graph.dfs(graph_type, user)
+                print()
+                continue
+
+            if action == "khan":
+                graph.khan(graph_type, user)
+
 
             else:
                 print("Invalid command")
