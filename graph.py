@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import math
 
 
 class Graph:
@@ -244,5 +245,83 @@ class Graph:
             else:
                 print("Graph contains a cycle")
 
+        else:
+            print("Invalid graph type")
+
+    def tarjan(self, graph_type, graph_data):
+        if graph_type == "Matrix":
+            visited = [False] * len(graph_data)
+            stack = []
+            for i in range(len(graph_data)):
+                if not visited[i]:
+                    self.tarjan_dfs_util(graph_data, i, visited, stack)
+            topological_order = []
+            while stack:
+                topological_order.append(stack.pop())
+            print("Topological order:", topological_order[::-1])
+        elif graph_type == "List":
+            visited = [False] * len(graph_data)
+            stack = []
+            for i in range(len(graph_data)):
+                if not visited[i]:
+                    self.tarjan_dfs_util_list(graph_data, i, visited, stack)
+            topological_order = []
+            while stack:
+                topological_order.append(stack.pop())
+            print("Topological order:", topological_order[::-1])
+        else:
+            print("Invalid graph type")
+
+    def tarjan_dfs_util(self, graph_data, vertex, visited, stack):
+        visited[vertex] = True
+        for i in range(len(graph_data)):
+            if graph_data[vertex][i] == 1 and not visited[i]:
+                self.tarjan_dfs_util(graph_data, i, visited, stack)
+        stack.append(vertex + 1)
+
+    def tarjan_dfs_util_list(self, graph_data, vertex, visited, stack):
+        visited[vertex] = True
+        for neighbor in graph_data[vertex]:
+            if not visited[neighbor-1]:
+                self.tarjan_dfs_util_list(graph_data, neighbor, visited, stack)
+        stack.append(vertex + 1)
+    
+
+    def export_to_tikz(self, graph_type, graph_data, file_path):
+        if graph_type == "Matrix":
+            with open(file_path, "w") as file:
+                file.write("\\documentclass{standalone}\n")
+                file.write("\\usepackage{tikz}\n")
+                file.write("\\begin{document}\n")
+                file.write("\\begin{tikzpicture}\n")
+                for i in range(len(graph_data)):
+                    angle = i * (360 / len(graph_data))
+                    x = 2 * math.cos(math.radians(angle))
+                    y = 2 * math.sin(math.radians(angle))
+                    file.write(f"\\node ({i+1}) at ({x},{y}) {{{i+1}}};\n")
+                for i in range(len(graph_data)):
+                    for j in range(len(graph_data)):
+                        if graph_data[i][j] == 1:
+                            file.write(f"\\draw[->] ({i+1}) -- ({j+1});\n")
+                file.write("\\end{tikzpicture}\n")
+                file.write("\\end{document}\n")
+            print(f"Graph exported to {file_path}")
+        elif graph_type == "List":
+            with open(file_path, "w") as file:
+                file.write("\\documentclass{standalone}\n")
+                file.write("\\usepackage{tikz}\n")
+                file.write("\\begin{document}\n")
+                file.write("\\begin{tikzpicture}\n")
+                for i, neighbors in enumerate(graph_data, start=1):
+                    angle = i * (360 / len(graph_data))
+                    x = 2 * math.cos(math.radians(angle))
+                    y = 2 * math.sin(math.radians(angle))
+                    file.write(f"\\node ({i}) at ({x},{y}) {{{i}}};\n")
+                for i, neighbors in enumerate(graph_data, start=1):
+                    for neighbor in neighbors:
+                        file.write(f"\\draw[->] ({i}) -- ({neighbor+1});\n")
+                file.write("\\end{tikzpicture}\n")
+                file.write("\\end{document}\n")
+            print(f"Graph exported to {file_path}")
         else:
             print("Invalid graph type")

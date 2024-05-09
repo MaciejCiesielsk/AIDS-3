@@ -2,7 +2,9 @@ import sys
 import os 
 import argparse 
 from graph import Graph
+import math
 
+CURRENT_DIR = os.path.dirname(__file__)
 
 parser=argparse.ArgumentParser()
 parser.add_argument("-generate", action="store_true" , help="Generate random graph")
@@ -54,6 +56,17 @@ def chosenGraph(graph_type, graph):
 
             if action == "dfs":
                 graph.dfs(graph_type, generation)
+                continue
+
+            if action == "khan":
+                graph.khan(graph_type, generation)
+                continue
+            if action == "tarjan":
+                graph.tarjan(graph_type, generation)
+                continue
+            
+            if action == "export":
+                graph.export_to_tikz(graph_type, generation,os.path.join(CURRENT_DIR, f"tikzpicture{graph_type}.txt"))
                 continue
 
             else:
@@ -109,7 +122,13 @@ def chosenGraph(graph_type, graph):
             if action == "khan":
                 graph.khan(graph_type, user)
 
+            if action == "tarjan":
+                graph.tarjan(graph_type, user)
+                continue
 
+            if action == "export":
+                graph.export_to_tikz(graph_type, user,os.path.join(CURRENT_DIR, f"tikzpicture{graph_type}.txt"))
+                continue
             else:
                 print("Invalid command")
     else:
