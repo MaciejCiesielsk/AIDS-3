@@ -2,7 +2,6 @@ import sys
 import os 
 import argparse 
 from graph import Graph
-import math
 
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -28,6 +27,9 @@ def chosenGraph(graph_type, graph):
                 print("BFS - breath first search")
                 print("DFS - depth first search")
                 print("Back - back to main menu")
+                print("Khan - topological sort using Khan's algorithm")
+                print("Tarjan - topological sort using Tarjan's algorithm")
+                print("Export - export graph to tikzpicture.txt")
                 print("Exit - exit program")
                 print("-".center(50, "-"))
                 continue
@@ -37,6 +39,8 @@ def chosenGraph(graph_type, graph):
                     graph.print_matrix()
                 elif graph_type == "List":
                     graph.print_list(generation,graph_type)
+                elif graph_type == "Table":
+                    graph.print_table(generation)
                 continue
 
             if action == "exit":
@@ -88,6 +92,8 @@ def chosenGraph(graph_type, graph):
                 print("Back - back to main menu")
                 print("Exit - exit program")
                 print("Khan - topological sort using Khan's algorithm")
+                print("Tarjan - topological sort using Tarjan's algorithm")
+                print("Export - export graph to tikzpicture.txt")
                 print("-".center(50, "-"))
                 continue
 
@@ -138,17 +144,21 @@ def chosenGraph(graph_type, graph):
 def main():
     graph = Graph()
     if args.generate:
-        command = input("Choose graph type: Matrix or List: ")
+        command = input("Choose graph type: Matrix, List or Table: ")
         if command == "Matrix":
             chosenGraph("Matrix", graph)
         elif command == "List":
             chosenGraph("List", graph)
+        elif command == "Table":
+            chosenGraph("Table", graph)
     elif args.user_provided:
-        command = input("Choose graph type: Matrix or List: ")
+        command = input("Choose graph type: Matrix, List or Table: ")
         if command == "Matrix":
             chosenGraph("Matrix", graph)
         elif command == "List":
             chosenGraph("List", graph)
+        elif command == "Table":
+            chosenGraph("Table", graph)
     else:
         print("Please provide an argument -generate or -user-provided")
         sys.exit(1)

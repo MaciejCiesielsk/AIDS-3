@@ -35,6 +35,19 @@ class Graph:
                         self.graph[i - 1].append(j)
 
             return self.graph
+        elif graph == "Table":
+            if saturation > 1 or saturation < 0:
+                print("Saturation must be a value between [0, 1].")
+                return None
+
+            self.connections = []
+
+            for i in range(nodes):
+                for j in range(i + 1, nodes):
+                    if random.random() < saturation:
+                        self.connections.append((i+1, j+1))
+
+            return self.connections
         else:
             print("Invalid graph type")
             return None
@@ -86,11 +99,15 @@ class Graph:
         if self.adjacency_matrix is None:
             print("Adjacency matrix is not generated.")
             return
-    
         print("    " + "  ".join(str(i) for i in range(1, len(self.adjacency_matrix)+1)))  
         print("--+" + "---"*len(self.adjacency_matrix)) 
         for i, row in enumerate(self.adjacency_matrix, start=1):
             print(f"{i} | {'  '.join(str(int(cell)) for cell in row)}")
+        
+    def print_table(self, graph_data):
+        for connection in graph_data:
+            print(f"{connection[0]} -> {connection[1]}")
+
 
     def find_edge(self, graph_type, graph_data):
         if graph_type == "Matrix":
@@ -113,6 +130,13 @@ class Graph:
                     print(f"Edge from {i + 1} to {j + 1} does not exist")
             else:
                 print("Invalid vertices")
+        elif graph_type == "Table":
+            i = int(input("Enter starting vertex: "))
+            j = int(input("Enter ending vertex: "))
+            if (i, j) in graph_data:
+                print(f"Edge from {i} to {j} exists")
+            else:
+                print(f"Edge from {i} to {j} does not exist")
         else:
             print("Invalid graph type")
 
@@ -147,6 +171,23 @@ class Graph:
                     if not visited[neighbor ]:  
                         queue.append(neighbor )
                         visited[neighbor ] = True
+        elif graph_type == "Table":
+            start -= 1 
+            if start < 0 or start >= len(graph_data):
+                print("Invalid starting vertex")
+                return
+
+            visited = [False] * len(graph_data)
+            queue = [start]
+            visited[start] = True
+            while queue:
+                vertex = queue.pop(0)
+                print(vertex + 1, end=" ")  
+
+                for connection in graph_data:
+                    if connection[0] == vertex + 1 and not visited[connection[1] - 1]:  
+                        queue.append(connection[1] - 1)
+                        visited[connection[1] - 1] = True
                 
         else:
             print("Invalid graph type")
@@ -174,6 +215,7 @@ class Graph:
                 print()
             else:
                 print("Invalid starting vertex")
+        
         else:
             print("Invalid graph type")
 
@@ -268,7 +310,7 @@ class Graph:
             topological_order = []
             while stack:
                 topological_order.append(stack.pop())
-            print("Topological order:", topological_order[::-1])
+            print("Topological order:", topological_order)
         else:
             print("Invalid graph type")
 
@@ -318,6 +360,22 @@ class Graph:
                     y = 2 * math.sin(math.radians(angle))
                     file.write(f"\\node ({i}) at ({x},{y}) {{{i}}};\n")
                 for i, neighbors in enumerate(graph_data, start=1):
+                    for neighbor in neighbors:
+                        file.write(f"\\draw[->] ({i}) -- ({neighbor+1});\n")
+                file.write("\\end{tikzpicture}\n")
+                file.write("\\end{document}\n")
+            print(f"Graph exported to {file_path}")
+        elif graph_type == "Table":
+            with open(file_path, "w") as file:
+                file.write("\\documentclass{standalone}\n")
+                file.write("\\usepackage{tikz}\n")
+                file.write("\\begin{document}\n")
+                file.write("\\begin{tikzpicture}\n")
+                for i, neighbors in enumerate(graph_data, start=1):
+                    angle = i * (360 / len(graph_data))
+                    x = 2 * math.cos(math.radians(angle))
+                    y = 2 * math.sin(math.radians(angle))
+                    file.write(f"\\node ({i}) at ({x},{y}) {{{i}}};\n")
                     for neighbor in neighbors:
                         file.write(f"\\draw[->] ({i}) -- ({neighbor+1});\n")
                 file.write("\\end{tikzpicture}\n")
