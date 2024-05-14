@@ -102,6 +102,8 @@ def chosenGraph(graph_type, graph):
                     graph.print_matrix()
                 elif graph_type == "List":
                     graph.print_list(user,graph_type)
+                elif graph_type == "Table":
+                    graph.print_table(user)
                 continue
 
             if action == "exit":
@@ -127,6 +129,7 @@ def chosenGraph(graph_type, graph):
 
             if action == "khan":
                 graph.khan(graph_type, user)
+                continue
 
             if action == "tarjan":
                 graph.tarjan(graph_type, user)

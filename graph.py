@@ -82,6 +82,22 @@ class Graph:
                         print(f"Invalid successor {successor} for vertex {i+1}")
 
             return self.graph
+        elif graph == "Table":
+            nodes = int(input("Enter number of vertices: "))
+            global export_nodes
+            export_nodes = nodes
+            self.connections = []
+
+            for i in range(nodes):
+                successors = input(f" {i+1}>").split()
+                for successor in successors:
+                    j = int(successor)
+                    if 1 <= j <= nodes:
+                        self.connections.append((i+1, j))
+                    else:
+                        print(f"Invalid successor {successor} for vertex {i+1}")
+
+            return self.connections
         else:
             print("Invalid graph type")
             return None
@@ -143,7 +159,8 @@ class Graph:
 
     def bfs(self, graph_type, graph_data, start):
         if graph_type == "Matrix":
-            visited = [False] * len(graph_data)
+            nodesmax = max(max(edge) for edge in graph_data)
+            visited = [False] * nodesmax
             queue = [start]
             visited[start] = True
 
@@ -160,7 +177,8 @@ class Graph:
                 print("Invalid starting vertex")
                 return
 
-            visited = [False] * len(graph_data)
+            nodesmax = max(max(edge) for edge in graph_data)
+            visited = [False] * nodesmax
             queue = [start]
             visited[start] = True
             while queue:
@@ -177,7 +195,8 @@ class Graph:
                 print("Invalid starting vertex")
                 return
 
-            visited = [False] * len(graph_data)
+            nodesmax = max(max(edge) for edge in graph_data)
+            visited = [False] * nodesmax
             queue = [start]
             visited[start] = True
             while queue:
@@ -215,26 +234,47 @@ class Graph:
                 print()
             else:
                 print("Invalid starting vertex")
+
+        elif graph_type == "Table":
+            start = int(input("Enter starting vertex: ")) - 1 
+            if 0 <= start < len(graph_data):
+                visited = [False] * len(graph_data)
+                self.dfs_util_table(graph_data, start, visited)
+                print(last_vertex, end=" ")
+                print()
+            else:
+                print("Invalid starting vertex")
         
         else:
             print("Invalid graph type")
 
 
-        
+    def dfs_util_table(self, graph_data, vertex, visited):
+        visited[vertex] = True
+        print(vertex + 1, end=" ")  
+
+        for connection in graph_data:
+            if connection[0] == vertex + 1 and connection[1] - 1 < len(visited) and not visited[connection[1] - 1]: 
+                self.dfs_util_table(graph_data, connection[1] - 1, visited)
+
+        global last_vertex
+        last_vertex = connection[1]
+
 
     def dfs_util_list(self, graph_data, vertex, visited):
         visited[vertex] = True
         print(vertex + 1, end=" ")  
 
         for neighbor in graph_data[vertex]:
-            if not visited[neighbor]: 
+            if neighbor < len(visited) and not visited[neighbor]: 
                 self.dfs_util_list(graph_data, neighbor, visited)
 
 
 
     def khan(self, graph_type, graph_data):
         if graph_type == "Matrix":
-            in_degree = [0] * len(graph_data)
+            nodesmax = max(max(edge) for edge in graph_data)
+            in_degree = [0] * (nodesmax)
             for i in range(len(graph_data)):
                 for j in range(len(graph_data)):
                     if graph_data[i][j] == 1:
@@ -262,7 +302,8 @@ class Graph:
                 print("Graph has a cycle")
 
         elif graph_type == "List":
-            in_degree = [0] * len(graph_data)
+            nodesmax = max(max(edge) for edge in graph_data)
+            in_degree = [0] * (nodesmax)
             for neighbors in graph_data:
                 for neighbor in neighbors:
                     in_degree[neighbor] += 1
@@ -287,6 +328,34 @@ class Graph:
             else:
                 print("Graph contains a cycle")
 
+        elif graph_type == "Table":
+            nodesmax = max(max(edge) for edge in graph_data)
+            in_degree = [0] * (nodesmax)
+            for connection in graph_data:
+                if connection[0] - 1 < len(in_degree):  # Check if the index is within bounds
+                    in_degree[connection[1] - 1] += 1
+                
+            queue = []
+            for i in range(len(in_degree)):
+                if in_degree[i] == 0:
+                    queue.append(i)
+
+            top = []
+            while queue:
+                vertex = queue.pop(0)
+                top.append(vertex + 1)
+
+                for connection in graph_data:
+                    if connection[0] == vertex + 1:
+                        in_degree[connection[1] - 1] -= 1
+                        if in_degree[connection[1] - 1] == 0:
+                            queue.append(connection[1] - 1)
+
+            if len(top) != len(graph_data):
+                print("Topological order:", top)
+            else:
+                print("Graph contains a cycle")
+
         else:
             print("Invalid graph type")
 
@@ -300,13 +369,25 @@ class Graph:
             topological_order = []
             while stack:
                 topological_order.append(stack.pop())
-            print("Topological order:", topological_order[::-1])
+            print("Topological order:", topological_order)
         elif graph_type == "List":
             visited = [False] * len(graph_data)
             stack = []
             for i in range(len(graph_data)):
                 if not visited[i]:
                     self.tarjan_dfs_util_list(graph_data, i, visited, stack)
+            topological_order = []
+            while stack:
+                topological_order.append(stack.pop())
+            print("Topological order:", topological_order)
+        elif graph_type == "Table":
+            nodesmax = max(max(edge) for edge in graph_data)
+            visited = [False] * (nodesmax)
+            stack = []
+            for connection in graph_data:
+                vertex = connection[0] - 1
+                if vertex < len(visited) and not visited[vertex]:
+                    self.tarjan_dfs_util_table(graph_data, vertex, visited, stack)
             topological_order = []
             while stack:
                 topological_order.append(stack.pop())
@@ -324,10 +405,17 @@ class Graph:
     def tarjan_dfs_util_list(self, graph_data, vertex, visited, stack):
         visited[vertex] = True
         for neighbor in graph_data[vertex]:
-            if not visited[neighbor-1]:
+            if neighbor < len(visited) and not visited[neighbor]: 
                 self.tarjan_dfs_util_list(graph_data, neighbor, visited, stack)
         stack.append(vertex + 1)
     
+    def tarjan_dfs_util_table(self, graph_data, vertex, visited, stack):
+        visited[vertex] = True
+        for connection in graph_data:
+            if connection[0] == vertex + 1 and not visited[connection[1] - 1]:
+                self.tarjan_dfs_util_table(graph_data, connection[1] - 1, visited, stack)
+        stack.append(vertex + 1)
+
 
     def export_to_tikz(self, graph_type, graph_data, file_path):
         if graph_type == "Matrix":
@@ -371,13 +459,17 @@ class Graph:
                 file.write("\\usepackage{tikz}\n")
                 file.write("\\begin{document}\n")
                 file.write("\\begin{tikzpicture}\n")
-                for i, neighbors in enumerate(graph_data, start=1):
-                    angle = i * (360 / len(graph_data))
+
+                for i in range(1, export_nodes + 1):
+                    angle = i * (360 / export_nodes + 1)
                     x = 2 * math.cos(math.radians(angle))
                     y = 2 * math.sin(math.radians(angle))
                     file.write(f"\\node ({i}) at ({x},{y}) {{{i}}};\n")
-                    for neighbor in neighbors:
-                        file.write(f"\\draw[->] ({i}) -- ({neighbor+1});\n")
+                
+                for connection in graph_data:
+                    start_vertex = connection[0]
+                    end_vertex = connection[1]
+                    file.write(f"\\draw[->] ({start_vertex}) -- ({end_vertex});\n")
                 file.write("\\end{tikzpicture}\n")
                 file.write("\\end{document}\n")
             print(f"Graph exported to {file_path}")
